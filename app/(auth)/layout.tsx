@@ -1,12 +1,9 @@
-export default function LoginLayout({
+export default function AuthLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <>
-      로그인 레이아웃
-      {children}
-    </>
+    <div className="flex items-center justify-center h-full">{children}</div>
   );
 }
