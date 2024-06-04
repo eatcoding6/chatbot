@@ -5,15 +5,26 @@ import { Button } from "../ui/button";
 import { Empty } from "./Empty";
 import { Message } from "./Message";
 import { AutoResizingTextarea } from "./AutoResizingTextarea";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { DUMMY_LONG_TEXT } from "@/constants/dummy";
 
 const EMPTY_DUMMY = [];
 const MESSAGE_DUMMY = [
   { id: "1", content: "더미데이터1", role: "user" },
   { id: "2", content: "더미데이터2", role: "assistant" },
+  { id: "3", content: "더미데이터3", role: "user" },
+  { id: "4", content: DUMMY_LONG_TEXT, role: "assistant" },
 ];
 export function Chat() {
   const [value, setValue] = useState("");
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, []);
+
   return (
     <div className="flex flex-col w-[80%] h-full mx-auto">
       {/* 채팅영역 */}
@@ -34,7 +45,7 @@ export function Chat() {
         )}
       </div>
       {/* input 영역 */}
-      <div className="pb-5">
+      <div className="sticky bottom-0 bg-white pb-5">
         <form className="flex items-center justify-center gap-4">
           <AutoResizingTextarea
             value={value}
@@ -45,6 +56,7 @@ export function Chat() {
           </Button>
         </form>
       </div>
+      <div ref={scrollRef} />
     </div>
   );
 }

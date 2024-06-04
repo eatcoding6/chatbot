@@ -14,6 +14,7 @@ import {
 import { Ellipsis, Pencil, Trash } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useModelStore } from "@/stores/model";
+import { useSheetStore } from "@/stores/sheet";
 
 type Props = {
   item: {
@@ -27,6 +28,7 @@ type Props = {
 export function SidebarItem({ item }: Props) {
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const setOpen = useSheetStore((state) => state.setOpen);
 
   const clickMenu = (event: MouseEvent<HTMLDivElement>) => {
     event.preventDefault();
@@ -36,7 +38,7 @@ export function SidebarItem({ item }: Props) {
 
   const { id, href, icon, label } = item;
   return (
-    <Link href={href}>
+    <Link href={href} scroll={false}>
       <div
         className={cn(
           "flex items-center justify-between p-3 text-sm group hover:text-white hover:bg-white/10 rounded-lg",
@@ -44,6 +46,7 @@ export function SidebarItem({ item }: Props) {
             ? "text-white bg-white/10"
             : "text-zinc-400"
         )}
+        onClick={() => setOpen(false)}
       >
         {/* 아이콘 label 영역 */}
         <div className="flex items-center gap-2">

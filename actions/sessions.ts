@@ -1,4 +1,4 @@
-import "server-only";
+"use server";
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
@@ -8,6 +8,7 @@ const encodedKey = new TextEncoder().encode(secretKey);
 
 type SessionPayload = {
   id: string;
+  name: string;
 };
 
 export const encrypt = async (payload: SessionPayload) => {
@@ -30,9 +31,9 @@ export const verify = async (session: string | undefined = "") => {
   }
 };
 
-export const createSession = async (id: string) => {
+export const createSession = async (id: string, name: string) => {
   const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
-  const session = await encrypt({ id });
+  const session = await encrypt({ id, name });
   cookies().set("session", session, {
     httpOnly: true,
     secure: true,
@@ -54,5 +55,5 @@ export const verifySession = async () => {
     redirect("/login");
   }
 
-  return { id: session.id };
+  return { id: session.id, name: session.name };
 };

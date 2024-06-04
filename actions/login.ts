@@ -29,7 +29,7 @@ export const login = async (_: any, formData: FormData) => {
       };
     }
 
-    const { id, password: userPassword } = existingUser;
+    const { id, name, password: userPassword } = existingUser;
     const passwordMatch = await bcrypt.compare(password, userPassword);
 
     if (!passwordMatch) {
@@ -39,7 +39,7 @@ export const login = async (_: any, formData: FormData) => {
     }
 
     // 세션 생성
-    await createSession(id);
+    await createSession(id, name);
   } catch (error) {
     console.error(error);
     return {

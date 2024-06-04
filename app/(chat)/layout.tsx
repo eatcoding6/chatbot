@@ -11,7 +11,7 @@ export default function ChatLayout({ children }: { children: ReactNode }) {
           <Sidebar />
         </div>
         {/* Header + chat 영역 */}
-        <div className="flex flex-col flex-1 h-full">
+        <div className="flex flex-col flex-1 h-full overflow-y-auto">
           <Header />
           {children}
         </div>
