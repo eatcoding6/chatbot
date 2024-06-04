@@ -13,6 +13,7 @@ import {
 } from "../ui/dropdown-menu";
 import { Ellipsis, Pencil, Trash } from "lucide-react";
 import { usePathname } from "next/navigation";
+import { useModelStore } from "@/stores/model";
 
 type Props = {
   item: {
