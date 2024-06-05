@@ -1,7 +1,7 @@
 "use client";
 
 import { ArrowUp } from "lucide-react";
-import { useChat } from "ai/react";
+import { useChat, Message as TMessage } from "ai/react";
 import { Button } from "../ui/button";
 import { Empty } from "./Empty";
 import { Message } from "./Message";
@@ -12,40 +12,44 @@ import { useParams, useRouter } from "next/navigation";
 import { addMessages, createConversation } from "@/actions/conversation";
 import { CHAT_ROUTES } from "@/constants/routes";
 
-const EMPTY_DUMMY = [];
-const MESSAGE_DUMMY = [
-  { id: "1", content: "더미데이터1", role: "user" },
-  { id: "2", content: "더미데이터2", role: "assistant" },
-  { id: "3", content: "더미데이터3", role: "user" },
-  { id: "4", content: DUMMY_LONG_TEXT, role: "assistant" },
-];
-export function Chat() {
+type Props = {
+  initialMessages?: TMessage[];
+};
+
+export function Chat({ initialMessages }: Props) {
   const router = useRouter();
-  const params = useParams<{ conversationsId: string }>();
+  const params = useParams<{ conversationId: string }>();
 
-  const { messages, input, handleInputChange, handleSubmit } = useChat({
-    onFinish: async (message) => {
-      // param -> conversationId 가 없으면
-      if (!params.conversationsId) {
-        // 1. create conversation
-        const conversation = await createConversation(message.name ?? input);
-        // 2. add messages
-        await addMessages(conversation.id, input, message.content);
+  const { messages, setMessages, input, handleInputChange, handleSubmit } =
+    useChat({
+      onFinish: async (message) => {
+        // param -> conversationId 가 없으면
+        if (!params.conversationId) {
+          // 1. create conversation
+          const conversation = await createConversation(message.name ?? input);
+          // 2. add messages
+          await addMessages(conversation.id, input, message.content);
 
-        router.push(`${CHAT_ROUTES.CONVERSATIONS}/${conversation.id}`);
-        // param -> conversationId 가 있으면
-      } else {
-        // 1. add messages
-        await addMessages(params.conversationsId, input, message.content);
-      }
-    },
-  });
+          router.push(`${CHAT_ROUTES.CONVERSATIONS}/${conversation.id}`);
+          // param -> conversationId 가 있으면
+        } else {
+          // 1. add messages
+          await addMessages(params.conversationId, input, message.content);
+        }
+      },
+    });
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const onSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.stopPropagation();
     handleSubmit(e);
   };
+
+  useEffect(() => {
+    if (initialMessages) {
+      setMessages(initialMessages);
+    }
+  }, []);
 
   useEffect(() => {
     if (scrollRef.current) {

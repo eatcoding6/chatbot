@@ -3,6 +3,8 @@
 import db from "@/db";
 import { verifySession } from "./sessions";
 import { conversation, message } from "@/db/schema";
+import { revalidatePath } from "next/cache";
+import { CHAT_ROUTES } from "@/constants/routes";
 
 export const addMessages = async (
   conversationId: string,
@@ -20,6 +22,8 @@ export const addMessages = async (
     content: assistantContent,
     role: "assistant",
   });
+
+  revalidatePath(CHAT_ROUTES.CONVERSATIONS);
 };
 
 export const createConversation = async (name: string) => {
@@ -32,6 +36,8 @@ export const createConversation = async (name: string) => {
       userId: session.id,
     })
     .returning();
+
+  revalidatePath(CHAT_ROUTES.CONVERSATIONS);
 
   return result[0];
 };

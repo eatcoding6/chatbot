@@ -25,12 +25,16 @@ export const conversation = pgTable("conversation", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
-export const conversationRelations = relations(conversation, ({ one }) => ({
-  user: one(user, {
-    fields: [conversation.userId],
-    references: [user.id],
-  }),
-}));
+export const conversationRelations = relations(
+  conversation,
+  ({ one, many }) => ({
+    user: one(user, {
+      fields: [conversation.userId],
+      references: [user.id],
+    }),
+    messages: many(message),
+  })
+);
 
 export const message = pgTable("message", {
   id: uuid("id").defaultRandom().notNull().primaryKey(),
