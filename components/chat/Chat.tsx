@@ -1,11 +1,12 @@
 "use client";
 
 import { ArrowUp } from "lucide-react";
+import { useChat } from "ai/react";
 import { Button } from "../ui/button";
 import { Empty } from "./Empty";
 import { Message } from "./Message";
 import { AutoResizingTextarea } from "./AutoResizingTextarea";
-import { useEffect, useRef, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import { DUMMY_LONG_TEXT } from "@/constants/dummy";
 
 const EMPTY_DUMMY = [];
@@ -16,24 +17,29 @@ const MESSAGE_DUMMY = [
   { id: "4", content: DUMMY_LONG_TEXT, role: "assistant" },
 ];
 export function Chat() {
-  const [value, setValue] = useState("");
+  const { messages, input, handleInputChange, handleSubmit } = useChat();
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  const onSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.stopPropagation();
+    handleSubmit(e);
+  };
 
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollIntoView({ behavior: "smooth" });
     }
-  }, []);
+  }, [messages]);
 
   return (
     <div className="flex flex-col w-[80%] h-full mx-auto">
       {/* 채팅영역 */}
       <div className="flex-1">
-        {MESSAGE_DUMMY.length === 0 ? (
+        {messages.length === 0 ? (
           <Empty />
         ) : (
           <>
-            {MESSAGE_DUMMY.map((message) => (
+            {messages.map((message) => (
               <Message
                 key={message.id}
                 name={"user"}
@@ -46,11 +52,11 @@ export function Chat() {
       </div>
       {/* input 영역 */}
       <div className="sticky bottom-0 bg-white pb-5">
-        <form className="flex items-center justify-center gap-4">
-          <AutoResizingTextarea
-            value={value}
-            onChange={(e) => setValue(e.target.value)}
-          />
+        <form
+          onSubmit={onSubmit}
+          className="flex items-center justify-center gap-4"
+        >
+          <AutoResizingTextarea value={input} onChange={handleInputChange} />
           <Button type="submit" size="icon">
             <ArrowUp />
           </Button>
