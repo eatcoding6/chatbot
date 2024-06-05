@@ -8,6 +8,9 @@ import { Message } from "./Message";
 import { AutoResizingTextarea } from "./AutoResizingTextarea";
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { DUMMY_LONG_TEXT } from "@/constants/dummy";
+import { useParams, useRouter } from "next/navigation";
+import { addMessages, createConversation } from "@/actions/conversation";
+import { CHAT_ROUTES } from "@/constants/routes";
 
 const EMPTY_DUMMY = [];
 const MESSAGE_DUMMY = [
@@ -17,7 +20,26 @@ const MESSAGE_DUMMY = [
   { id: "4", content: DUMMY_LONG_TEXT, role: "assistant" },
 ];
 export function Chat() {
-  const { messages, input, handleInputChange, handleSubmit } = useChat();
+  const router = useRouter();
+  const params = useParams<{ conversationsId: string }>();
+
+  const { messages, input, handleInputChange, handleSubmit } = useChat({
+    onFinish: async (message) => {
+      // param -> conversationId 가 없으면
+      if (!params.conversationsId) {
+        // 1. create conversation
+        const conversation = await createConversation(message.name ?? input);
+        // 2. add messages
+        await addMessages(conversation.id, input, message.content);
+
+        router.push(`${CHAT_ROUTES.CONVERSATIONS}/${conversation.id}`);
+        // param -> conversationId 가 있으면
+      } else {
+        // 1. add messages
+        await addMessages(params.conversationsId, input, message.content);
+      }
+    },
+  });
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const onSubmit = (e: FormEvent<HTMLFormElement>) => {
