@@ -11,6 +11,8 @@ import { DUMMY_LONG_TEXT } from "@/constants/dummy";
 import { useParams, useRouter } from "next/navigation";
 import { addMessages, createConversation } from "@/actions/conversation";
 import { CHAT_ROUTES } from "@/constants/routes";
+import { useModelStore } from "@/stores/model";
+import { useUserStore } from "@/stores/user";
 
 type Props = {
   initialMessages?: TMessage[];
@@ -19,6 +21,8 @@ type Props = {
 export function Chat({ initialMessages }: Props) {
   const router = useRouter();
   const params = useParams<{ conversationId: string }>();
+  const model = useModelStore((state) => state.model);
+  const user = useUserStore((state) => state.user);
 
   const { messages, setMessages, input, handleInputChange, handleSubmit } =
     useChat({
@@ -42,7 +46,7 @@ export function Chat({ initialMessages }: Props) {
 
   const onSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.stopPropagation();
-    handleSubmit(e);
+    handleSubmit(e, { data: { model } });
   };
 
   useEffect(() => {
@@ -61,14 +65,14 @@ export function Chat({ initialMessages }: Props) {
     <div className="flex flex-col w-[80%] h-full mx-auto">
       {/* 채팅영역 */}
       <div className="flex-1">
-        {messages.length === 0 ? (
+        {!initialMessages && messages.length === 0 ? (
           <Empty />
         ) : (
           <>
             {messages.map((message) => (
               <Message
                 key={message.id}
-                name={"user"}
+                name={user.name}
                 content={message.content}
                 role={message.role}
               />
