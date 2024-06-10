@@ -20,11 +20,14 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { Ellipsis, Pencil, Trash } from "lucide-react";
-import { usePathname } from "next/navigation";
+import { useParams, usePathname, useRouter } from "next/navigation";
 import { useModelStore } from "@/stores/model";
 import { useSheetStore } from "@/stores/sheet";
 import toast from "react-hot-toast";
-import { updateConversation } from "@/actions/conversation";
+import { deleteConversation, updateConversation } from "@/actions/conversation";
+import { useModalStore } from "@/stores/modal";
+import { ModalFooter } from "../modal/ModalFooter";
+import { BASE_URL } from "@/constants/routes";
 
 type Props = {
   item: {
@@ -37,6 +40,10 @@ type Props = {
 
 export function SidebarItem({ item }: Props) {
   const pathname = usePathname();
+  const params = useParams<{ conversationId: string }>();
+  const router = useRouter();
+
+  const [loading, setLoading] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [value, setValue] = useState(item.label);
@@ -44,6 +51,7 @@ export function SidebarItem({ item }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const setOpen = useSheetStore((state) => state.setOpen);
+  const { openModal, closeModal } = useModalStore();
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     setValue(event.target.value);
@@ -66,6 +74,44 @@ export function SidebarItem({ item }: Props) {
         toast.error("이름 수정을 실패했습니다.");
       }
     }
+  };
+
+  const handleDelete = async () => {
+    try {
+      setLoading(true);
+      await deleteConversation(id);
+
+      toast.success("삭제에 성공했습니다.");
+
+      if (params.conversationId === id) {
+        router.push(BASE_URL);
+      }
+
+      closeModal();
+    } catch (error) {
+      console.error(error);
+      toast.error("삭제에 실패했습니다.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const clickDelete = (event: MouseEvent<HTMLDivElement>) => {
+    event.preventDefault();
+
+    // 모달 로직
+    openModal({
+      title: "정말 삭제하겠습니까?",
+      description: "삭제 후 데이터는 복구하기 어려울 수 있습니다.",
+      footer: (
+        <ModalFooter
+          loading={loading}
+          confirmButtonVariant="destructive"
+          onCancel={closeModal}
+          onConfirm={handleDelete}
+        />
+      ),
+    });
   };
 
   const clickEdit = (event: MouseEvent<HTMLDivElement>) => {
@@ -133,7 +179,7 @@ export function SidebarItem({ item }: Props) {
                 <Pencil size={18} />
                 Edit
               </DropdownMenuItem>
-              <DropdownMenuItem className="gap-2">
+              <DropdownMenuItem className="gap-2" onClick={clickDelete}>
                 <Trash size={18} />
                 Delete
               </DropdownMenuItem>

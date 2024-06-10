@@ -51,3 +51,9 @@ export const updateConversation = async (id: string, name: string) => {
 
   revalidatePath(BASE_URL);
 };
+
+export const deleteConversation = async (id: string) => {
+  await db.delete(conversation).where(eq(conversation.id, id));
+
+  revalidatePath(BASE_URL);
+};
