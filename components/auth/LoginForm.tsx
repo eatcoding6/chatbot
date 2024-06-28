@@ -14,7 +14,7 @@ import { LoginSchema } from "@/schemas/auth";
 import { login } from "@/actions/login";
 
 export function LoginForm() {
-  const [state, action] = useFormState(login, undefined);
+  const [error, action] = useFormState(login, undefined);
   const { errors, validateField } =
     useFormValidate<TLoginFormError>(LoginSchema);
   console.log("errors", errors);
@@ -25,10 +25,10 @@ export function LoginForm() {
   };
 
   useEffect(() => {
-    if (state?.errorMessage) {
-      toast.error(state.errorMessage);
+    if (error?.errorMessage) {
+      toast.error(error.errorMessage);
     }
-  }, [state]);
+  }, [error]);
 
   return (
     <FormCard

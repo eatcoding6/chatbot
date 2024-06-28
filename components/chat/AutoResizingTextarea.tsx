@@ -5,7 +5,6 @@ import { Textarea } from "../ui/textarea";
 import { cn } from "@/lib/utils";
 
 export function AutoResizingTextarea({
-  className,
   value,
   ...others
 }: TextareaHTMLAttributes<HTMLTextAreaElement>) {

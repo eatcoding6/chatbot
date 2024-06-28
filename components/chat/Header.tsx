@@ -10,9 +10,8 @@ export function Header() {
         <Sidebar />
       </MobileMenu>
       {/* 모델 선택 영역 */}
-      <div>
-        <ModelSelect />
-      </div>
+
+      <ModelSelect />
     </header>
   );
 }

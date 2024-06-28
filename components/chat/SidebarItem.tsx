@@ -43,7 +43,6 @@ export function SidebarItem({ item }: Props) {
   const params = useParams<{ conversationId: string }>();
   const router = useRouter();
 
-  const [loading, setLoading] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [value, setValue] = useState(item.label);
@@ -59,7 +58,6 @@ export function SidebarItem({ item }: Props) {
 
   const handleKeyDown = async (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
-      event.preventDefault();
       await handleBlur();
     }
   };
@@ -78,7 +76,6 @@ export function SidebarItem({ item }: Props) {
 
   const handleDelete = async () => {
     try {
-      setLoading(true);
       await deleteConversation(id);
 
       toast.success("삭제에 성공했습니다.");
@@ -91,8 +88,6 @@ export function SidebarItem({ item }: Props) {
     } catch (error) {
       console.error(error);
       toast.error("삭제에 실패했습니다.");
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -103,19 +98,12 @@ export function SidebarItem({ item }: Props) {
     openModal({
       title: "정말 삭제하겠습니까?",
       description: "삭제 후 데이터는 복구하기 어려울 수 있습니다.",
-      footer: (
-        <ModalFooter
-          loading={loading}
-          confirmButtonVariant="destructive"
-          onCancel={closeModal}
-          onConfirm={handleDelete}
-        />
-      ),
+      footer: <ModalFooter onCancel={closeModal} onConfirm={handleDelete} />,
     });
   };
 
   const clickEdit = (event: MouseEvent<HTMLDivElement>) => {
-    event.stopPropagation();
+    event.preventDefault();
     setIsEditMode(true);
     setIsMenuOpen(false);
   };

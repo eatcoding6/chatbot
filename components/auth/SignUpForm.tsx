@@ -14,10 +14,9 @@ import { signUp } from "@/actions/signup";
 import toast from "react-hot-toast";
 
 export function SignUpForm() {
-  const [state, action] = useFormState(signUp, undefined);
+  const [error, action] = useFormState(signUp, undefined);
   const { errors, validateField } =
     useFormValidate<TSignUpFormError>(SignUpSchema);
-  console.log("state", state);
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
@@ -25,10 +24,10 @@ export function SignUpForm() {
   };
 
   useEffect(() => {
-    if (state?.errorMessage) {
-      toast.error(state.errorMessage);
+    if (error?.errorMessage) {
+      toast.error(error.errorMessage);
     }
-  }, [state]);
+  }, [error]);
 
   return (
     <FormCard

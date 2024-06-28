@@ -31,9 +31,9 @@ export const verify = async (session: string | undefined = "") => {
   }
 };
 
-export const createSession = async (id: string, name: string) => {
+export const createSession = async (payload: SessionPayload) => {
   const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
-  const session = await encrypt({ id, name });
+  const session = await encrypt(payload);
   cookies().set("session", session, {
     httpOnly: true,
     secure: true,
@@ -55,5 +55,5 @@ export const verifySession = async () => {
     redirect("/login");
   }
 
-  return { id: session.id, name: session.name };
+  return session;
 };

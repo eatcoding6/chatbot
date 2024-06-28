@@ -23,8 +23,6 @@ export const addMessages = async (
     content: assistantContent,
     role: "assistant",
   });
-
-  revalidatePath(CHAT_ROUTES.CONVERSATIONS);
 };
 
 export const createConversation = async (name: string) => {
@@ -38,7 +36,7 @@ export const createConversation = async (name: string) => {
     })
     .returning();
 
-  revalidatePath(CHAT_ROUTES.CONVERSATIONS);
+  revalidatePath(BASE_URL);
 
   return result[0];
 };

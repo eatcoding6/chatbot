@@ -22,7 +22,7 @@ export function ModelSelect() {
 
   return (
     <Select value={currentModel} onValueChange={handleChange}>
-      <SelectTrigger className="w-[180px] text-xl">
+      <SelectTrigger className="w-[180px] text-xl border-none focus:ring-transparent">
         <SelectValue placeholder="모델을 선택해주세요." />
       </SelectTrigger>
       <SelectContent>

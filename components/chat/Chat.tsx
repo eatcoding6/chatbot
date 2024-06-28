@@ -44,11 +44,6 @@ export function Chat({ initialMessages }: Props) {
     });
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  const onSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.stopPropagation();
-    handleSubmit(e, { data: { model } });
-  };
-
   useEffect(() => {
     if (initialMessages) {
       setMessages(initialMessages);
@@ -65,7 +60,7 @@ export function Chat({ initialMessages }: Props) {
     <div className="flex flex-col w-[80%] h-full mx-auto">
       {/* 채팅영역 */}
       <div className="flex-1">
-        {!initialMessages && messages.length === 0 ? (
+        {!params.conversationId && messages.length === 0 ? (
           <Empty />
         ) : (
           <>
@@ -83,7 +78,7 @@ export function Chat({ initialMessages }: Props) {
       {/* input 영역 */}
       <div className="sticky bottom-0 bg-white pb-5">
         <form
-          onSubmit={onSubmit}
+          onSubmit={(e) => handleSubmit(e, { data: { model } })}
           className="flex items-center justify-center gap-4"
         >
           <AutoResizingTextarea value={input} onChange={handleInputChange} />

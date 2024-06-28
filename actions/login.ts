@@ -39,7 +39,7 @@ export const login = async (_: any, formData: FormData) => {
     }
 
     // 세션 생성
-    await createSession(id, name);
+    await createSession({ id, name });
   } catch (error) {
     console.error(error);
     return {
